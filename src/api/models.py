@@ -1,10 +1,17 @@
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
-db = SQLAlchemy()
+app = Flask(__name__)
+CORS(app)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///your_database_name.db'  # Set your database URI
+db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=True)
+    username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
@@ -15,5 +22,7 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, its a security breach
+            "username": self.username,
+            "is_active": self.is_active
         }
+
